@@ -7,6 +7,8 @@ use App\Models\UserModel;
 
 class AdminController extends BaseController
 {
+
+    //creating branch
   public function index()
   {
     if ($this->request->isAJAX()) {
@@ -39,7 +41,7 @@ class AdminController extends BaseController
       return $this->response->setJSON(['status' => false, 'message' => 'Error Occurred']);
     }
   }
-
+  //get branch details
   public function getBranchDetails()
   {
     $branch_id = $this->request->getGet('id');
@@ -62,6 +64,7 @@ class AdminController extends BaseController
       return $this->response->setJSON(['status' => false, 'message' => 'Missing branch ID']);
     }
   }
+    //updating branch details
   public function updateBranch()
   {
     if ($this->request->isAJAX()) {
@@ -95,6 +98,8 @@ class AdminController extends BaseController
       return $this->response->setJSON(['status' => false, 'message' => 'Error Occurred']);
     }
   }
+
+    
   public function getCourseByBranch()
   {
     $branch = $this->request->getGet('branch');
@@ -118,6 +123,7 @@ class AdminController extends BaseController
     }
   }
 
+    //create employee
   public function addEmployee()
   {
     if ($this->request->isAJAX()) {
@@ -165,7 +171,7 @@ class AdminController extends BaseController
   }
 
 
-
+  //update employee
   public function updateEmployee()
   {
     if ($this->request->isAJAX()) {
@@ -212,10 +218,9 @@ class AdminController extends BaseController
     }
   }
 
-
+  //get employee details
   public function getEmployeeDetails()
   {
-    // if ($this->request->isAJAX()) {
     $id = $this->request->getGet('id');
     if ($id) {
       $userModel = new UserModel();
@@ -234,7 +239,6 @@ class AdminController extends BaseController
         ->setContentType('application/json', 'utf-8');
       return $this->response->setJSON(['status' => false, 'message' => 'Missing Employee ID']);
     }
-    // }
   }
   public function getEmployeeByRole()
   {
@@ -281,13 +285,14 @@ class AdminController extends BaseController
     }
   }
 
-
+  //updating employee status
   public function updateEmployeeStatus()
   {
     $id = $this->request->getGet('ID');
+    $status=$this->request->getGet('status');
     if ($id) {
       $userModel = new UserModel();
-      $result    = $userModel->updateEmployeeStatus($id);
+      $result    = $userModel->updateEmployeeStatus($id,$status);
       $this->response->setStatusCode(200)
         ->setHeader('Access-Control-Allow-Origin', '*')
         ->setContentType('application/json', 'utf-8');
@@ -305,27 +310,7 @@ class AdminController extends BaseController
   }
 
 
-  public function updateEmployeeSuspend()
-  {
-    $id = $this->request->getGet('ID');
-    if ($id) {
-      $userModel = new UserModel();
-      $result    = $userModel->updateEmployeeSuspend($id);
-      $this->response->setStatusCode(200)
-          ->setHeader('Access-Control-Allow-Origin', '*')
-          ->setContentType('application/json', 'utf-8');
-      if ($result) {
-        return $this->response->setJSON(['status' => true, 'message' => 'Status updated successfully', 'employee' => $result]);
-      } else {
-        return $this->response->setJSON(['status' => false, 'message' => 'Error']);
-      }
-    } else {
-      $this->response->setStatusCode(400)
-        ->setHeader('Access-Control-Allow-Origin', '*')
-        ->setContentType('application/json', 'utf-8');
-      return $this->response->setJSON(['status' => false, 'message' => 'Missing employee ID']);
-    }
-  }
+ // creating module
   public function addModule()
   {
     if ($this->request->isAJAX()) {
@@ -363,7 +348,7 @@ class AdminController extends BaseController
   }
 
 
-
+  //get module details
   public function getModuleDetails()
   {
     // if ($this->request->isAJAX()) {
@@ -392,7 +377,7 @@ class AdminController extends BaseController
     // }
   }
 
-
+  //creating course
   public function addCourse()
   {
     if ($this->request->isAJAX()) {
@@ -433,6 +418,7 @@ class AdminController extends BaseController
     }
   }
 
+  //updating course
   public function updateCourse()
   {
     $branch      = $this->request->getPost('branch');
@@ -462,7 +448,7 @@ class AdminController extends BaseController
         ->setContentType('application/json', 'utf-8');
     }
   }
-
+  //get course details
   public function getCourseDetails()
   {
     // if ($this->request->isAJAX()) {
@@ -492,37 +478,15 @@ class AdminController extends BaseController
   }
 
 
+  //updating module status
+  public function updateModuleStatus()
+  {
+    $id = $this->request->getGet('ID');
+    $status = $this->request->getGet('status');
 
-  public function activateModule()
-  {
-    $id = $this->request->getGet('ID');
     if ($id) {
       $userModel = new UserModel();
-      $result    = $userModel->activateModule($id);
-      if ($result) {
-        $this->response->setStatusCode(200)
-          ->setHeader('Access-Control-Allow-Origin', '*')
-          ->setContentType('application/json', 'utf-8');
-        return $this->response->setJSON(['status' => true, 'message' => 'Status updated successfully', 'Module' => $result]);
-      } else {
-        $this->response->setStatusCode(500)
-          ->setHeader('Access-Control-Allow-Origin', '*')
-          ->setContentType('application/json', 'utf-8');
-        return $this->response->setJSON(['status' => false, 'message' => 'Error']);
-      }
-    } else {
-      $this->response->setStatusCode(400)
-        ->setHeader('Access-Control-Allow-Origin', '*')
-        ->setContentType('application/json', 'utf-8');
-      return $this->response->setJSON(['status' => false, 'message' => 'Missing Module ID']);
-    }
-  }
-  public function suspendModule()
-  {
-    $id = $this->request->getGet('ID');
-    if ($id) {
-      $userModel = new UserModel();
-      $result    = $userModel->suspendModule($id);
+      $result    = $userModel->updateModuleStatus($id,$status);
       if ($result) {
         $this->response->setStatusCode(200)
           ->setHeader('Access-Control-Allow-Origin', '*')
@@ -543,12 +507,15 @@ class AdminController extends BaseController
   }
 
 
-  public function activateCourse()
+  //updating course status
+  public function updateCourseStatus()
   {
     $id = $this->request->getGet('ID');
+    $status = $this->request->getGet('status');
+
     if ($id) {
       $userModel = new UserModel();
-      $result    = $userModel->activateCourse($id);
+      $result    = $userModel->updateCourseStatus($id,$status);
       if ($result) {
         $this->response->setStatusCode(200)
           ->setHeader('Access-Control-Allow-Origin', '*')
@@ -568,35 +535,7 @@ class AdminController extends BaseController
     }
   }
 
-  public function suspendCourse()
-  {
-    $id = $this->request->getGet('ID');
-    if ($id) {
-      $userModel = new UserModel();
-      $result    = $userModel->suspendCourse($id);
-      if ($result) {
-        $this->response->setStatusCode(200)
-          ->setHeader('Access-Control-Allow-Origin', '*')
-          ->setContentType('application/json', 'utf-8');
-        return $this->response->setJSON(['status' => true, 'message' => 'Status updated successfully', 'Module' => $result]);
-      } else {
-        $this->response->setStatusCode(500)
-          ->setHeader('Access-Control-Allow-Origin', '*')
-          ->setContentType('application/json', 'utf-8');
-        return $this->response->setJSON(['status' => false, 'message' => 'Error']);
-      }
-    } else {
-      $this->response->setStatusCode(400)
-        ->setHeader('Access-Control-Allow-Origin', '*')
-        ->setContentType('application/json', 'utf-8');
-      return $this->response->setJSON(['status' => false, 'message' => 'Missing Module ID']);
-    }
-  }
-
-
-
-
-
+  //creating module class
   public function addModuleCls()
   {
     if ($this->request->isAJAX()) {
@@ -653,6 +592,7 @@ class AdminController extends BaseController
       }
     }
   }
+  //updating module
   public function updateModule()
   {
     if ($this->request->isAJAX()) {
@@ -674,9 +614,6 @@ class AdminController extends BaseController
         ->setHeader('Access-Control-Allow-Origin', '*')
         ->setContentType('application/json', 'utf-8');
       if ($result['status']) {
-        // $moduleId = $result['inserted_id'];
-        // $data['module_id'] = $moduleId;
-        // $result2 = $userModel->addModuleClass($data);
         return $this->response->setJSON(['status' => true, 'message' => 'Module updated successfully..', 'Module' => $result]);
       } else {
 
@@ -691,6 +628,7 @@ class AdminController extends BaseController
   }
 
 
+  //updating module class
 
   public function updateModuleCls()
   {
@@ -720,10 +658,10 @@ class AdminController extends BaseController
       return $this->response->setJSON(['status' => false, 'message' => 'Failed']);
     }
   }
+  //get module class details
 
   public function getModuleCls()
   {
-    // if ($this->request->isAJAX()) {
     $id = $this->request->getGet('id');
     if ($id) {
       $userModel = new UserModel();
@@ -742,6 +680,8 @@ class AdminController extends BaseController
         ->setContentType('application/json', 'utf-8');
       return $this->response->setJSON(['status' => false, 'message' => 'Missing Module ID']);
     }
-    // }
   }
+
+
+  
 }

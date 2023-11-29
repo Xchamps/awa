@@ -1,11 +1,5 @@
 <?= view('admin/header'); ?>
 <!-- main navigation starts-->
-<style>
-  body {
-    overflow: scroll !important;
-    /* Show scrollbars */
-  }
-</style>
 <!-- main navigation ends here-->
 <main>
   <div class="content-wrapper">
@@ -75,7 +69,11 @@
             if (!empty($employees)) {
               foreach ($employees as $employee) { ?>
                 <tbody>
-                  <tr>
+                  <?php if ($employee['status'] == '0') { ?>
+                    <tr>
+                    <?php } else { ?>
+                    <tr style="background-color: skyblue;">
+                    <?php } ?>
                     <td><?= $i; ?></td>
                     <td><?= $employee['emp_id']; ?></td>
                     <td><?= $employee['name']; ?></td>
@@ -94,10 +92,17 @@
                     </td>
                     <td>
                       <button class="btn btn-default text-capitalize edit" data-toggle="modal" data-target="#edit-employee" data-id="<?= $employee['id']; ?>">Edit</button>
-                      <button class="btn btn-sm btn-success text-capitalize" data-toggle='modal' type="button" data-target='#activeModal' data-id="<?= $employee['id']; ?>">Activate</button>
-                      <button class="btn btn-sm btn-danger text-capitalize suspend" data-toggle='modal' type="button" data-target='#suspendModal' data-id="<?= $employee['id']; ?>">Suspend</button>
+                      <?php if ($employee['status'] == '0') { ?>
+                        <button class="btn btn-sm btn-success text-capitalize" data-toggle='modal' type="button" data-target='#activeModal' data-id="<?= $employee['id']; ?>" disabled>Active</button>
+                        <button class="btn btn-sm btn-danger text-capitalize suspend" data-toggle='modal' type="button" data-target='#suspendModal' data-id="<?= $employee['id']; ?>">Suspend</button>
+                      <?php } else { ?>
+                        <button class="btn btn-sm btn-success text-capitalize" data-toggle='modal' type="button" data-target='#activeModal' data-id="<?= $employee['id']; ?>">Activate</button>
+                        <button class="btn btn-sm btn-danger text-capitalize suspend" data-toggle='modal' type="button" data-target='#suspendModal' data-id="<?= $employee['id']; ?>" disabled>Suspended</button>
+
+                      <?php  } ?>
+
                     </td>
-                  </tr>
+                    </tr>
 
                 </tbody>
             <?php
@@ -107,7 +112,13 @@
           </table>
         </div>
       </div>
-      <?= $pager_links ?>
+      <div class="text-right">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination m-0">
+            <?= $pager_links ?>
+          </ul>
+        </nav>
+      </div>
 
     </div>
   </div>
@@ -147,7 +158,118 @@
     </div>
   </div>
 </div>
+<div id="add-employee" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add User</h4>
+      </div>
+      <div class="modal-body">
+        <form method='post' id="addEmployee">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="text-capitalize">Employee Id</label>
+                <input class="form-control" type="text" name="emp_id" id="emp_id">
+              </div>
+            </div>
 
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="text-capitalize">Employee Name</label>
+                <input class="form-control" type="text" name="name" id="name">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="text-capitalize">email id</label>
+                <input class="form-control" type="email" name="email" id="email">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="text-capitalize">Password</label>
+                <input class="form-control" type="password" name="password" id="password" autocomplete="on">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="text-capitalize">phone number</label>
+                <input class="form-control" type="number" name="mobile" id="mobile">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="text-capitalize">Select Role</label>
+                <select class="form-control" name="role" id="role">
+                  <option value="" disabled selected>select role</option>
+                  <option value="2">Manager</option>
+                  <option value="3">Counceller</option>
+                  <option value="4">Co-ordinator</option>
+                  <option value="5">Accountant</option>
+                  <option value="7">Faculty</option>
+                  <option value="8">Lab-Faculty</option>
+                  <option value="9">Recruiter</option>
+                  <option value="10">Aptitude trainer</option>
+                  <option value="11">Softskills trainer</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-12 options">
+              <div class="form-group">
+                <label class="text-capitalize">Select Skills</label>
+                <div class="branches-check">
+                  <div class="customradio">
+                    <input type="checkbox" id="html" name='skills[]'>
+                    <span class="text-uppercase" value="html">html</span>
+                  </div>
+                  <div class="customradio">
+                    <input type="checkbox" id="css" name='skills[]'>
+                    <span class="text-uppercase" value="css">css</span>
+                  </div>
+                  <div class="customradio">
+                    <input type="checkbox" id="javascript" name='skills[]'>
+                    <span class="text-uppercase" value="javascript">javascript</span>
+                  </div>
+                  <div class="customradio">
+                    <input type="checkbox" id="react js" name='skills[]'>
+                    <span class="text-uppercase" value="react js">react js</span>
+                  </div>
+                  <div class="customradio">
+                    <input type="checkbox" id="php" name='skills[]'>
+                    <span class="text-uppercase" value="php">php</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 options">
+            <div class="form-group">
+              <label class="text-capitalize">Add branches</label>
+              <?php foreach ($branches as $branch) {
+              ?>
+                <div class="branches-check">
+                  <div class="customradio">
+                    <input type="checkbox" value="<?= $branch['id']; ?>" id="<?= $branch['id']; ?>" name="branch[]">
+                    <span class="text-uppercase"><?= $branch['name']; ?></span>
+                  </div>
+                </div>
+
+              <?php } ?>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div id="edit-employee" class="modal fade" role="dialog">
   <div class="modal-dialog">
@@ -247,107 +369,6 @@
   </div>
 </div>
 
-
-
-
-<div id="add-employee" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add User</h4>
-      </div>
-      <div class="modal-body">
-        <form method='post' id="addEmployee">
-          <div class="row">
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="text-capitalize">Employee Id</label>
-                <input class="form-control" type="text" name="emp_id" id="emp_id">
-              </div>
-            </div>
-
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="text-capitalize">Employee Name</label>
-                <input class="form-control" type="text" name="name" id="name">
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="text-capitalize">email id</label>
-                <input class="form-control" type="email" name="email" id="email">
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="text-capitalize">Password</label>
-                <input class="form-control" type="password" name="password" id="password" autocomplete="on">
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="text-capitalize">phone number</label>
-                <input class="form-control" type="number" name="mobile" id="mobile">
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="text-capitalize">Select Role</label>
-                <select class="form-control" name="role" id="role">
-                  <option value="" disabled selected>select role</option>
-                  <option value="2">Manager</option>
-                  <option value="3">Counceller</option>
-                  <option value="4">Co-ordinator</option>
-                  <option value="5">Accountant</option>
-                  <option value="7">Faculty</option>
-                  <option value="8">Lab-Faculty</option>
-                  <option value="9">Recruiter</option>
-                  <option value="10">Aptitude trainer</option>
-                  <option value="11">Softskills trainer</option>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-12 options">
-              <div class="form-group">
-                <label class="text-capitalize">Select Skills</label>
-                <div class="branches-check">
-                  <div class="customradio">
-                    <input type="checkbox" id="skills" name='skills[]'>
-                    <span class="text-uppercase" value="html">html</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-12 options">
-              <div class="form-group">
-                <label class="text-capitalize">Add branches</label>
-                <?php foreach ($branches as $branch) {
-                ?>
-                  <div class="branches-check">
-                    <div class="customradio">
-                      <input type="checkbox" value="<?= $branch['id']; ?>" id="<?= $branch['id']; ?>" name="branch[]">
-                      <span class="text-uppercase"><?= $branch['name']; ?></span>
-                    </div>
-                  </div>
-
-                <?php } ?>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <button type="submit" class="btn btn-primary">Create</button>
-              </div>
-            </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
 <!-- js includes -->
 <!-- jquery library -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -385,12 +406,10 @@
         },
         'skills[]': {
           required: true,
-          // maxlength: 1,
 
         },
         'branch[]': {
           required: true,
-          // maxlength: 1,
 
 
         }
@@ -563,7 +582,6 @@
           $('#employeeTable tbody').empty();
           $('#employeeTable tbody').html('<tr><td colspan="9" class="text-center">No Courses Found</td></tr>');
 
-          // alert('No Courses Found');
         }
       },
       error: function(xhr, status, error) {
@@ -580,7 +598,7 @@
     $('.btn-success').click(function() {
       var ID = $(this).data('id');
       var modal = $(this).data('target');
-
+      var status = '0';
       $(modal).find('.btn-activate').off('click').on('click', function() {
         $.ajax({
           dataType: 'json',
@@ -588,6 +606,8 @@
           url: '<?= base_url() ?>updateEmployeeStatus/',
           data: {
             ID: ID,
+            status: status
+
           },
           success: function(response) {
             console.log(response);
@@ -614,14 +634,15 @@
     $('.btn-danger').click(function() {
       var ID = $(this).data('id');
       var modal = $(this).data('target');
-
+      var status = '1';
       $(modal).find('.btn-suspend').off('click').on('click', function() {
         $.ajax({
           dataType: 'json',
           type: 'GET',
-          url: '<?= base_url() ?>updateEmployeeSuspend/',
+          url: '<?= base_url() ?>updateEmployeeStatus/',
           data: {
             ID: ID,
+            status: status
           },
           success: function(response) {
             console.log(response);
@@ -690,7 +711,6 @@
             $('#employeeTable tbody').empty();
             $('#employeeTable tbody').html('<tr><td colspan="9" class="text-center">No Courses Found</td></tr>');
 
-            // alert('No Courses Found');
           }
         },
         error: function(xhr, status, error) {

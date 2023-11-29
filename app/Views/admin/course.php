@@ -51,7 +51,11 @@
               // var_dump($courses);
               foreach ($courses as $course) { ?>
                 <tbody>
-                  <tr>
+                  <?php if ($course['status'] == '0') { ?>
+                    <tr>
+                    <?php } else { ?>
+                    <tr style="background-color: skyblue;">
+                    <?php } ?>
                     <td><?= $i ?></td>
                     <td><?= $course['name'] ?></td>
                     <td><?= $course['short_name'] ?></td>
@@ -66,13 +70,18 @@
                     </td>
                     <td>
                       <button class="btn btn-default text-capitalize edit" data-toggle="modal" data-target="#edit-courses" data-id="<?= $course['id'] ?>">Edit</button>
-                      <button class="btn btn-sm btn-success text-capitalize" data-toggle='modal' type="button" data-target='#activeModal' data-id="<?= $course['id'] ?>">active</button>
-                      <button class="btn btn-sm btn-danger text-capitalize" data-toggle='modal' type="button" data-target='#suspendModal' data-id="<?= $course['id'] ?>">Suspend</button>
+                      <?php if ($course['status'] == '0') { ?>
+                        <button class="btn btn-sm btn-success text-capitalize" data-toggle='modal' type="button" data-target='#activeModal' data-id="<?= $course['id'] ?>" disabled>active</button>
+                        <button class="btn btn-sm btn-danger text-capitalize" data-toggle='modal' type="button" data-target='#suspendModal' data-id="<?= $course['id'] ?>">Suspend</button>
+                      <?php } else { ?>
+                        <button class="btn btn-sm btn-success text-capitalize" data-toggle='modal' type="button" data-target='#activeModal' data-id="<?= $course['id'] ?>">activate</button>
+                        <button class="btn btn-sm btn-danger text-capitalize" data-toggle='modal' type="button" data-target='#suspendModal' data-id="<?= $course['id'] ?>" disabled>Suspended</button>
+                      <?php } ?>
                     </td>
-                  </tr>
-                  <tr>
+                    </tr>
+                    <tr>
 
-                  </tr>
+                    </tr>
                 </tbody>
               <?php
                 $i++;
@@ -81,27 +90,12 @@
           </div>
         </div>
       </div>
-      <!-- <div class="text-right">
+      <div class="text-right">
         <nav aria-label="Page navigation example">
           <ul class="pagination m-0">
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">«</span>
-                <span class="sr-only">Previous</span>
-              </a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">»</span>
-                <span class="sr-only">Next</span>
-              </a>
-            </li>
           </ul>
         </nav>
-      </div> -->
+      </div>
     </div>
   </div>
 </main>
@@ -231,11 +225,6 @@
   </div>
 </div>
 
-
-
-
-
-
 <div id="edit-courses" class="modal" role="dialog">
   <div class="modal-dialog">
     <!-- Modal content-->
@@ -324,8 +313,6 @@
     </div>
   </div>
 </div>
-
-
 <!-- js includes -->
 <!-- jquery library -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -334,8 +321,8 @@
 <script src="<?= base_url() ?>public/assets/bootstrap/js/bootstrap.min.js"></script>
 <script src='<?= base_url() ?>public/assets/js/main.js'></script>
 <script>
+  // add more topics
   $("#addMore").click(function(e) {
-    //Append a new row of code to the "#items" div
     $(".module-wrapper").append('<div class="row addedModule"> <div class="col-sm-4"><div class="form-group"><select name="module[]" id="module" class="form-control"><option value="" disabled selected>select module</option><?php foreach ($modules as $module) { ?><option value="<?= $module['id'] ?>"><?= $module['name'] ?></option><?php } ?></select></div></div></div>');
   });
 
@@ -343,7 +330,6 @@
     e.preventdefault;
     $(this).parents('.addedModule').remove();
   });
-
 
   // custom file upload
   $('#chooseFile').bind('change', function() {
@@ -380,8 +366,6 @@
           $('#eclass').val(course[0].classes);
           $('#eorder').val(course[0].module_order);
           $('#emodule').val(course[0].modules);
-
-
         },
         error: function(xhr, status, error) {
           console.error(error);
@@ -457,14 +441,16 @@
     $('.btn-success').click(function() {
       var ID = $(this).data('id');
       var modal = $(this).data('target');
-
+      var status = '0';
       $(modal).find('.btn-activate').off('click').on('click', function() {
         $.ajax({
           dataType: 'json',
           type: 'GET',
-          url: '<?= base_url() ?>activateCourse/',
+          url: '<?= base_url() ?>updateCourseStatus/',
           data: {
             ID: ID,
+            status: status
+
           },
           success: function(response) {
             console.log(response);
@@ -493,14 +479,15 @@
     $('.btn-danger').click(function() {
       var ID = $(this).data('id');
       var modal = $(this).data('target');
-
+      var status = '1';
       $(modal).find('.btn-suspend').off('click').on('click', function() {
         $.ajax({
           dataType: 'json',
           type: 'GET',
-          url: '<?= base_url() ?>suspendCourse/',
+          url: '<?= base_url() ?>updateCourseStatus/',
           data: {
             ID: ID,
+            status: status
           },
           success: function(response) {
             console.log(response);
@@ -521,37 +508,6 @@
     });
   });
 </script>
-
-<!-- <script>
-  $(document).ready(function() {
-    $('#searchbranch').change(function() {
-      var branch = $('#searchbranch').val();
-
-      $.ajax({
-        dataType: 'json',
-        type: 'GET',
-        url: '<?= base_url() ?>getCourseByBranch/',
-        data: {
-          branch: branch,
-        },
-        success: function(response) {
-          // console.log(response);
-          var courses = response.Course;
-          console.log(courses)
-
-          // $("#custom-table > tbody > tr").each(function() {
-          //   var employeeBranch = $(this).data('branch');
-          //   var showRow = (employeeBranch === branch || branch === '');
-          //   $(this).toggle(showRow);
-          // });
-        },
-        error: function(xhr, status, error) {
-          console.error(error);
-        },
-      });
-    });
-  });
-</script> -->
 
 
 <script>
@@ -600,7 +556,6 @@
             $('#courseTable tbody').empty();
             $('#courseTable tbody').html('<tr><td colspan="7" class="text-center">No Courses Found</td></tr>');
 
-            // alert('No Courses Found');
           }
         },
         error: function(xhr, status, error) {

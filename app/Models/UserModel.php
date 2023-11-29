@@ -34,7 +34,9 @@ class UserModel extends Model
         $builder->select('id');
         $builder->select('number');
         $builder->select('email');
+
         $builder->where('email', $email);
+
         $builder->limit(1);
         $query = $builder->get();
         $result = $query->getResult();
@@ -44,7 +46,9 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->empTbl);
         $builder->select('id');
+
         $builder->where('token', $token);
+
         $builder->limit(1);
         $query = $builder->get();
         $result = $query->getRowArray();
@@ -55,7 +59,9 @@ class UserModel extends Model
         $builder = $this->db->table($this->empTbl);
         $builder->set('password', $updateData['password']);
         $builder->set('updated_at', $updateData['updated_at']);
+
         $builder->where("email", $email);
+
         if ($builder->update()) {
             return true;
         } else {
@@ -63,35 +69,22 @@ class UserModel extends Model
         }
     }
 
-    public function countAllEmployees(){
-    $builder = $this->db->table($this->empTbl);
-    $builder->selectCount('id');
-    $query = $builder->countAllResults();
-    return  $query;
-
-    }
-    public function getEmployeesPaginated($perPage, $offset)
+    public function countAllEmployees()
     {
         $builder = $this->db->table($this->empTbl);
-        $builder->select('*');
-        $builder->orderBy('created_at', 'DESC');
-        $totalRows = $builder->countAllResults(false);
-    
-        $builder->limit($perPage, $offset);
-        $query = $builder->get();
-    
-        $result['employees'] = $query->getResult();
-        $result['totalRows'] = $totalRows;
-    
-        return $result;
+        $builder->selectCount('id');
+
+        $query = $builder->countAllResults();
+        return  $query;
     }
-    
+
     public function createBranch($data)
     {
         $builder = $this->db->table($this->branchesTbl);
         $builder->set('name', $data['name']);
         $builder->set('address', $data['address']);
         $builder->set('created_at', date('Y-m-d h:i:s'));
+
         $success = $builder->insert();
 
         if ($success) {
@@ -104,6 +97,7 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->branchesTbl);
         $builder->select('*');
+
         $query = $builder->get();
         $result = $query->getResultArray();
         return $result;
@@ -112,6 +106,7 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->branchesTbl);
         $builder->select("*");
+
         $query = $builder->getWhere(['id' => $branch_id]);
 
         if ($query->getNumRows() > 0) {
@@ -126,7 +121,9 @@ class UserModel extends Model
         $builder->set('name', $data['name']);
         $builder->set('address', $data['address']);
         $builder->set('updated_at', date('Y-m-d h:i:s'));
+
         $builder->where('id', $data['id']);
+
         $success = $builder->update();
         if ($success) {
             return ['status' => true, 'message' => "Successfully updated branch"];
@@ -139,7 +136,9 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->empTbl);
         $builder->select("*");
+
         $builder->where('email', $email);
+
         $query = $builder->get();
         $result = $query->getRowArray();
         if ($query->getNumRows() > 0) {
@@ -153,7 +152,9 @@ class UserModel extends Model
         $builder = $this->db->table($this->empTbl);
         $builder->set('token', $token);
         $builder->set('updated_at', date('Y-m-d h:i:s'));
+
         $builder->where('email', $uemail);
+
         $success = $builder->update();
         if ($success) {
             return ['status' => true];
@@ -175,6 +176,7 @@ class UserModel extends Model
         $builder->set('skills', $data['skills']);
         $builder->set('branch', $data['branchId']);
         $builder->set('created_at', date('Y-m-d h:i:s'));
+
         $success = $builder->insert();
         if ($success) {
             return ['status' => true];
@@ -189,6 +191,7 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->empTbl);
         $builder->select('*');
+
         $query = $builder->get();
         $result = $query->getResultArray();
         return $result;
@@ -197,7 +200,9 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->roleTbl);
         $builder->select('name');
+
         $builder->where('id', $role);
+
         $query = $builder->get();
         $result = $query->getRowArray();
         return $result;
@@ -207,7 +212,9 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->branchesTbl);
         $builder->select('name');
+
         $builder->where('id', $branch);
+
         $query = $builder->get();
         $result = $query->getRowArray();
         return $result;
@@ -216,7 +223,9 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->empTbl);
         $builder->select('*');
+
         $builder->where('id', $id);
+
         $query = $builder->get();
         $result = $query->getResultArray();
         return $result;
@@ -227,7 +236,9 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->moduleTbl);
         $builder->select('*');
+
         $builder->where('id', $id);
+
         $query = $builder->get();
         $result = $query->getRowArray();
         return $result;
@@ -237,7 +248,9 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->courseTbl);
         $builder->select('*');
+
         $builder->where('id', $id);
+
         $query = $builder->get();
         $result = $query->getResultArray();
         return $result;
@@ -261,7 +274,26 @@ class UserModel extends Model
         $builder->set('skills', $data['skills']);
         $builder->set('branch', $data['branchId']);
         $builder->set('updated_at', date('Y-m-d h:i:s'));
+
         $builder->where('id', $data['id']);
+
+        $success = $builder->update();
+
+        if ($success) {
+            return ['status' => true];
+        } else {
+            return ['status' => false];
+        }
+    }
+
+    public function updateEmployeeStatus($id, $status)
+    {
+        $builder = $this->db->table($this->empTbl);
+        $builder->set('status', $status);
+        $builder->set('updated_at', date('Y-m-d h:i:s'));
+
+        $builder->where('id', $id);
+
         $success = $builder->update();
         if ($success) {
             return ['status' => true];
@@ -270,33 +302,7 @@ class UserModel extends Model
         }
     }
 
-    public function updateEmployeeStatus($id)
-    {
-        $builder = $this->db->table($this->empTbl);
-        $builder->set('status', '1');
-        $builder->set('updated_at', date('Y-m-d h:i:s'));
-        $builder->where('id', $id);
-        $success = $builder->update();
-        if ($success) {
-            return ['status' => true];
-        } else {
-            return ['status' => false];
-        }
-    }
 
-    public function updateEmployeeSuspend($id)
-    {
-        $builder = $this->db->table($this->empTbl);
-        $builder->set('status', '0');
-        $builder->set('updated_at', date('Y-m-d h:i:s'));
-        $builder->where('id', $id);
-        $success = $builder->update();
-        if ($success) {
-            return ['status' => true];
-        } else {
-            return ['status' => false];
-        }
-    }
     public function addModule($data)
     {
 
@@ -305,9 +311,9 @@ class UserModel extends Model
         $builder->set('cost', $data['cost']);
         $builder->set('module_type', $data['module_type']);
         $builder->set('time', $data['time']);
-
         $builder->set('created_at', date('Y-m-d h:i:s'));
         $builder->set('status', 'active');
+
         $success = $builder->insert();
         if ($success) {
             $insertedId = $this->db->insertID();
@@ -327,9 +333,7 @@ class UserModel extends Model
         $builder->set('practicles', $data['practicles']);
         $builder->set('topics', $data['topics']);
         $builder->set('module_id', $data['module_id']);
-
         $builder->set('created_at', date('Y-m-d h:i:s'));
-        // $builder->set('status', 'active');
 
         $success = $builder->insert();
         if ($success) {
@@ -342,6 +346,7 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->moduleTbl);
         $builder->select('*');
+
         $query = $builder->get();
         $result = $query->getResultArray();
         return $result;
@@ -350,8 +355,10 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->courseTbl);
         $builder->select('courses.*, module_details.name as module_name, branches.name as branch_name');
+
         $builder->join('module_details', 'courses.modules = module_details.id');
         $builder->join('branches', 'courses.branch = branches.id');
+
         $query = $builder->get();
         $result = $query->getResultArray();
         return $result;
@@ -361,10 +368,12 @@ class UserModel extends Model
     public function getModule($id)
     {
         $builder = $this->db->table($this->moduleTbl);
-        // $builder->select('module_details.*');
         $builder->select('module_classes.*');
+
         $builder->join('module_classes', 'module_classes.module_id = module_details.id');
+
         $builder->where('module_details.id', $id);
+
         $query = $builder->get();
         if ($query->getNumRows() > 0) {
             $result = $query->getResultArray();
@@ -384,7 +393,9 @@ class UserModel extends Model
         $builder->set('modules', $data['module']);
         $builder->set('order', $data['order']);
         $builder->set('updated_at', date('Y-m-d h:i:s'));
+
         $builder->where('id', $data['id']);
+
         $success = $builder->update();
         if ($success) {
             return ['status' => true];
@@ -404,6 +415,7 @@ class UserModel extends Model
         $builder->set('modules', $data['module']);
         $builder->set('module_order	', $data['order']);
         $builder->set('created_at', date('Y-m-d h:i:s'));
+
         $success = $builder->insert();
         if ($success) {
             return ['status' => true];
@@ -411,26 +423,16 @@ class UserModel extends Model
             return ['status' => false];
         }
     }
-    public function activateModule($id)
+    public function updateModuleStatus($id, $status)
     {
         $builder = $this->db->table($this->moduleTbl);
-        $builder->set('status', '1');
+        $builder->set('status', $status);
         $builder->set('updated_at', date('Y-m-d h:i:s'));
+
         $builder->where('id', $id);
+
         $success = $builder->update();
-        if ($success) {
-            return ['status' => true];
-        } else {
-            return ['status' => false];
-        }
-    }
-    public function suspendModule($id)
-    {
-        $builder = $this->db->table($this->moduleTbl);
-        $builder->set('status', '0');
-        $builder->set('updated_at', date('Y-m-d h:i:s'));
-        $builder->where('id', $id);
-        $success = $builder->update();
+
         if ($success) {
             return ['status' => true];
         } else {
@@ -440,12 +442,15 @@ class UserModel extends Model
 
 
 
-    public function activateCourse($id)
+
+    public function updateCourseStatus($id, $staus)
     {
         $builder = $this->db->table($this->courseTbl);
-        $builder->set('status', '1');
+        $builder->set('status', $staus);
         $builder->set('updated_at', date('Y-m-d h:i:s'));
+
         $builder->where('id', $id);
+
         $success = $builder->update();
         if ($success) {
             return ['status' => true];
@@ -455,19 +460,7 @@ class UserModel extends Model
     }
 
 
-    public function suspendCourse($id)
-    {
-        $builder = $this->db->table($this->courseTbl);
-        $builder->set('status', '0');
-        $builder->set('updated_at', date('Y-m-d h:i:s'));
-        $builder->where('id', $id);
-        $success = $builder->update();
-        if ($success) {
-            return ['status' => true];
-        } else {
-            return ['status' => false];
-        }
-    }
+
 
 
     public function getCourseByBranch($branch)
@@ -475,10 +468,13 @@ class UserModel extends Model
 
         $builder = $this->db->table($this->courseTbl);
         $builder->select('courses.*, module_details.name as module_name, branches.name as branch_name');
+
         $builder->join('module_details', 'courses.modules = module_details.id');
         $builder->join('branches', 'courses.branch = branches.id');
+
         $builder->where('courses.branch', $branch);
         $builder->where('courses.status', '0');
+
         $query = $builder->get();
         if ($query->getNumRows() > 0) {
             $result = $query->getResultArray();
@@ -491,10 +487,13 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->empTbl);
         $builder->select('employees.*, branches.name as branch_name, roles.name as role_name');
+
         // $builder->join('skills', 'employees.skills = skills.id');
         $builder->join('roles', 'roles.id = employees.role');
         $builder->join('branches', 'employees.branch = branches.id');
+
         $builder->where('branch', $branch);
+
         $query = $builder->get();
         $result = $query->getResultArray();
         return $result;
@@ -504,9 +503,12 @@ class UserModel extends Model
     {
         $builder = $this->db->table($this->empTbl);
         $builder->select('employees.*, branches.name as branch_name, roles.name as role_name');
+
         $builder->join('branches', 'branches.id = employees.branch');
         $builder->join('roles', 'roles.id = employees.role');
+
         $builder->where('roles.id', $role);
+
         $query = $builder->get();
         $result = $query->getResultArray();
         return $result;
@@ -522,6 +524,7 @@ class UserModel extends Model
         $builder->set('material', $data['student_file']);
         $builder->set('practicles', $data['practicals_file']);
         $builder->set('created_at', date('Y-m-d h:i:s'));
+
         $success = $builder->insert();
         if ($success) {
             return ['status' => true];
@@ -540,7 +543,9 @@ class UserModel extends Model
         $builder->set('module_type', $data['module_type']);
         $builder->set('time', $data['time']);
         $builder->set('updated_at', date('Y-m-d h:i:s'));
+
         $builder->where('id', $data['id']);
+
         $success = $builder->update();
         if ($success) {
             return ['status' => true];
@@ -558,7 +563,9 @@ class UserModel extends Model
         $builder->set('faculty_reference', $data['fac_refer']);
         $builder->set('topics', $data['topics']);
         $builder->set('updated_at', date('Y-m-d h:i:s'));
+
         $builder->where('id', $data['id']);
+
         $success = $builder->update();
         if ($success) {
             return ['status' => true];
